@@ -1,0 +1,101 @@
+{% extends "box_detail_ar.html" %}
+{% load static %}
+{% block header %}{% endblock %}
+{% block inner_content %}
+<!-- contest-details-section start -->
+<section class="pb-120 mt-minus-300">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="checkout-area">
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <div class="checkout-form-area">
+                                <div class="top">
+                                    {% if user.is_authenticated %}
+                                    <div class="left">
+                                        <h3 class="mb-2">مرحبا عزيزي المستخدم يمكنك الأن دفع المبلغ المطلوب</h3>
+                                    </div>
+                                    {% else %}
+                                    <div class="left">
+                                        <h3 class="mb-2">هل انت عضو بالفعل؟</h3>
+                                    </div>
+                                    <div class="right">
+                                        <a href="#0" data-target="#loginModal" data-toggle="modal">
+                                            <span>تسجيل الدخول</span>
+                                            <i class="las la-user"></i>
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div><!-- top end -->
+                                <div class="payment-details mt-30">
+                                    <h3 class="title">طرق الدفع</h3>
+                                    <div class="paypal-container">
+                                    </div>
+                                </div>
+                            </div><!-- checkout-form-area end -->
+                        </div>
+                        <div class="col-lg-5 mt-lg-0 mt-4">
+                            <div class="checkout-wrapper">
+                                <div class="checkout-wrapper__header">
+                                    <h3>الدفع</h3>
+                                </div>
+                                <div class="checkout-wrapper__body">
+                                    <ul class="price">
+                                        <li>
+                                            <div class="left">
+                                                <h4 class="caption">سعر {{box.name}}</h4>
+                                            </div>
+                                            <div class="right">
+                                                <span class="price">جنيه {{box.price}}</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- contest-cart end -->
+                        </div><!-- col-lg-12 end -->
+                    </div>
+                </div>
+</section>
+{% endblock  %}
+<!-- contest-details-section end  -->
+{% block more_js %}
+<script
+    src="https://www.paypal.com/sdk/js?client-id=ARB1noHCsvveowvobVBfSEG1coV13uIysRAlCBzk1UhAc1BGln2tuWCRp9GOUCNlAfaE2-KiItkqeMgp">
+</script>
+<script>
+    var slug = window.location.pathname.split("/")[2]
+    $.ajax({
+        type: "GET",
+        url: "/pay/" + slug + "/",
+    }).done((data) => {
+        var priceUSD = data.priceUSD
+        var priceEGP = data.price
+        paypal.Buttons({
+            createOrder: function (data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: priceUSD.toString()
+                        }
+                    }]
+                });
+            },
+            onApprove: function (data, actions) {
+                $.ajax({
+                    type: "POST",
+                    url: "/pay/" + slug + "/",
+                    data:{price:priceEGP},
+                })
+                return actions.order.capture().then(function (details) {
+                    alert('Transaction completed by ' + details.payer.name.given_name);
+                });
+            },
+            style: {
+                shape: 'pill',
+            }
+        }).render('.paypal-container');
+    })
+</script>
+{% endblock %}

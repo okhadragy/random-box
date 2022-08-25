@@ -1,0 +1,218 @@
+{% extends "home_ar.html" %}
+{% load static %}
+
+{% block more_modal %}
+<!-- Message modal -->
+<div class="modal fade" id="messageModal" tabindex="1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="account-form-area">
+                    <button type="button" class="close-btn" data-dismiss="modal" aria-label="Close"><i
+                            class="las la-times"></i></button>
+                    <h3 class="title" id="message-title"></h3>
+                    <div class="account-form-wrapper">
+                        <p class="text-center mt-4" id="message-content"></p>
+                        {% if classification %}
+                        <ul class="social-link-list">
+                            {% if classification.facebook %}
+                            <li><a href="{{classification.facebook}}" id="message-facebook"><i class="fab fa-facebook-f"></i></a></li>
+                            {% endif %}
+                            {% if classification.twitter %}
+                            <li><a href="{{classification.twitter}}" id="message-twitter"><i class="fab fa-twitter"></i></a></li>
+                            {% endif %}
+                            {% if classification.google %}
+                            <li><a href="{{classification.google}}" id="message-google"><i class="fab fa-google-plus-g"></i></a></li>
+                            {% endif %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- inner-hero-section start -->
+<div class="inner-hero-section">
+    <div class="bg-shape"><img src="{% static 'images/elements/inner-hero-shape.png' %}" alt="image"></div>
+</div>
+<!-- inner-hero-section end -->
+
+{% block inner_content %}
+<!-- contest-details-section start -->
+<section class="pb-120 mt-minus-300">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="contest-cart">
+                    <div class="contest-cart__left" dir="rtl">
+                        <div class="contest-cart__thumb-slider">
+                            <img src="{{box.image.url}}" style="display: block;">
+                        </div>
+                        <div class="box-details">
+                            <h4 class="subtitle">أفتح الأن لفرصة للفوز</h4>
+                            <h3 class="contest-name" style="margin-bottom:0px;">{{box.name}} صندوق</h3>
+                            <div class="ticket-price">
+                                <small>السعر</small>
+                                <span class="amount">{{box.price}} جنيه</span>
+                            </div>
+                        </div>
+                    </div><!-- contest-cart__left end -->
+                    <div class="contest-cart__right" dir="rtl">
+                        <div class="roulette_container contest-cart__thumb-slider">
+                            <div class="roulette" style="display:none;">
+                                {% for product in box.products.all %}
+                                <img src="{{product.image.url}}" id="{{product.pk}}" class="roulette-img">
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center mt-30 space-evenly">
+                            <div class="mt-sm-0 mt-3"><button class="cmn-btn style--three" id="open">أفتح</button></div>
+                            <div class="mt-sm-0 mt-3"><button class="cmn-btn style--three" id="test">جرب مجانا</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- contest-cart__right end -->
+                </div><!-- contest-cart end -->
+            </div><!-- col-lg-12 end -->
+            <div class="col-lg-12 mt-5">
+                <div class="contest-cart">
+                    <div class="contest-cart__left" dir="rtl">
+                        <div class="contest-cart__slider-area">
+                            <div class="contest-cart__thumb-slider slick">
+                                {% for product in box.products.all %}
+                                <div class="single-slide"><img src="{{product.image.url}}" alt="image"></div>
+                                {% endfor %}
+                            </div><!-- contest-cart__thumb-slider end -->
+                            <div class="contest-cart__nav-slider">
+                                {% for product in box.products.all %}
+                                <div class="single-slide tab" id="{{product.pk}}-tab" role="tablist"><img
+                                        src="{{product.image.url}}" alt="image"></div>
+                                {% endfor %}
+                            </div><!-- contest-cart__nav-slider end -->
+                        </div>
+                    </div><!-- contest-cart__left end -->
+                    <div class="contest-cart__right" dir="rtl">
+                        {% for product in box.products.all %}
+                        <div id="{{product.pk}}-content"
+                            class="product-details {% if forloop.counter != 1 %}d-none{% endif %}">
+                            <h4 class="subtitle">ألقي نظرة علي الجوائز</h4>
+                            <h3 class="contest-name">{{product.name}}</h3>
+                            <p style="overflow-wrap: anywhere;">{{product.description}}</p>
+                            <div class="ticket-price">
+                                <small>السعر</small>
+                                <span class="amount">{{product.price}} جنيه</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div><!-- contest-cart__right end -->
+                </div><!-- contest-cart end -->
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock  %}
+<!-- contest-details-section end  -->
+{% endblock %}
+
+{% block more_js %}
+{% if user.is_authenticated %}
+{% if user.player.balance < box.price %}
+<script type="text/javascript">
+    var rouletteOptions = {
+        speed: 10,
+        duration: 3,
+        stopCallback: function ($stopElm) {
+            $('#test').prop('disabled', false);
+            $('#open').prop('disabled', false);;
+        }
+    }
+
+    startRoulette = function (Options) {
+        $('.contest-cart__right .roulette').roulette('option', Options)
+        $('.contest-cart__right .roulette').roulette('start');
+        $('#test').prop('disabled', true);
+        $('#open').prop('disabled', true);
+    }
+
+    $('#test').click(function () {
+        randomNumber = Math.floor(Math.random() * $(".roulette-inner>img").length - 1)
+        rouletteOptions["stopImageNumber"] = randomNumber
+        startRoulette(rouletteOptions)
+    });
+
+    $('#open').click(function () {
+        $("#message-title").text("رصيدك غير كافي")
+        $("#message-content").text("يجب عليك الدفع أولا")
+        $('#messageModal').modal("show");
+        $(".social-link-list").remove()
+        var slug = window.location.pathname.split("/")[2]
+        pay_btn = '<div class="social-link-list"><a href="/checkout/' + slug +
+            '/" class="cmn-btn style--three">إدفع الأن</a></div>'
+        $(".account-form-wrapper").append(pay_btn)
+    });
+</script>
+{% else %}
+<script type="text/javascript">
+    var rouletteOptions = {
+        speed: 10,
+        duration: 3,
+        stopCallback: function ($stopElm) {
+            $('#test').prop('disabled', false);
+            $('#open').prop('disabled', false);;
+        }
+    }
+
+    startplaying = function () {
+        slug = window.location.pathname.split("/")[2]
+        $.ajax({
+            type: "GET",
+            url: "/playing/" + slug + "/",
+        }).done((data) => {
+            rouletteOptions["stopImageNumber"] = $("#" + data.pk).index(".roulette-img")
+            message = JSON.parse(data.message.slice(1, -1))
+            $("#message-title").text(message.fields.title)
+            $("#message-content").text(message.fields.content)
+            rouletteOptions["stopCallback"] = function () {
+                $('#test').prop('disabled', false);
+                $('#open').prop('disabled', false);
+                $('#messageModal').modal("show");
+            }
+            startRoulette(rouletteOptions)
+            rouletteOptions["stopCallback"] = function ($stopElm) {
+                $('#test').prop('disabled', false);
+                $('#open').prop('disabled', false);;
+            }
+        })
+    }
+
+    startRoulette = function (Options) {
+        $('.contest-cart__right .roulette').roulette('option', Options)
+        $('.contest-cart__right .roulette').roulette('start');
+        $('#test').prop('disabled', true);
+        $('#open').prop('disabled', true);
+    }
+
+    $('#test').click(function () {
+        randomNumber = Math.floor(Math.random() * $(".roulette-inner>img").length - 1)
+        rouletteOptions["stopImageNumber"] = randomNumber
+        startRoulette(rouletteOptions)
+    });
+
+    $('#open').click(function () {
+        startplaying()
+    });
+</script>
+{% endif %}
+{% else %}
+<script type="text/javascript">
+    $('#test,#open').click(function () {
+        $('#loginModal').modal('show');
+    });
+</script>
+{% endif %}
+
+{% endblock %}

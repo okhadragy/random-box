@@ -1,0 +1,133 @@
+{% extends "home_en.html" %}
+{% load static %}
+{% block content %}
+<!-- inner-hero-section start -->
+<div class="inner-hero-section">
+    <div class="bg-shape"><img src="{% static 'images/elements/inner-hero-shape.png' %}" alt="image"></div>
+</div>
+<!-- inner-hero-section end -->
+
+<!-- contest-details-section start -->
+<section class="pb-120 mt-minus-300">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="contest-cart">
+                    <div class="contest-cart__left">
+                        <div class="contest-cart__thumb-slider">
+                            <img src="/media/{{box.image}}" style="display: block;">
+                        </div>
+                        <h4 class="subtitle">Open now for a chance to win</h4>
+                        <h3 class="contest-name">{{box.name}} Box</h3>
+                        <div class="ticket-price">
+                            <small>Price</small>
+                            <span class="amount">{{box.price}}LE</span>
+                        </div>
+                    </div><!-- contest-cart__left end -->
+                    <div class="contest-cart__right">
+                        <div class="roulette_container contest-cart__thumb-slider">
+                            <div class="roulette" style="display:none;">
+                                {% for product in box.products.all %}
+                                <img src="{{product.image.url}}" id="{{product.pk}}" class="roulette-img">
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center mt-30 space-evenly">
+                            <div class="mt-sm-0 mt-3"><button class="cmn-btn style--three" id="open">Open</button></div>
+                            <div class="mt-sm-0 mt-3"><button class="cmn-btn style--three" id="test">Test spin</button>
+                            </div>
+                        </div>
+                    </div><!-- contest-cart__right end -->
+                </div><!-- contest-cart end -->
+            </div><!-- col-lg-12 end -->
+            <div class="col-lg-12 mt-5">
+                <div class="contest-cart">
+                    <div class="contest-cart__left">
+                        <div class="contest-cart__slider-area">
+                            <div class="contest-cart__thumb-slider slick">
+                                {% for product in box.products.all %}
+                                <div class="single-slide"><img src="{{product.image.url}}" alt="image"></div>
+                                {% endfor %}
+                            </div><!-- contest-cart__thumb-slider end -->
+                            <div class="contest-cart__nav-slider">
+                                {% for product in box.products.all %}
+                                <div class="single-slide tab" id="{{product.pk}}-tab" role="tablist"><img
+                                        src="{{product.image.url}}" alt="image"></div>
+                                {% endfor %}
+                            </div><!-- contest-cart__nav-slider end -->
+                        </div>
+                    </div><!-- contest-cart__left end -->
+                    <div class="contest-cart__right">
+                        {% for product in box.products.all %}
+                        <div id="{{product.pk}}-content"
+                            class="product-details {% if forloop.counter != 1 %}d-none{% endif %}">
+                            <h4 class="subtitle">Take a look at the items</h4>
+                            <h3 class="contest-name">{{product.name}}</h3>
+                            <p>{{product.description}}</p>
+                            <div class="ticket-price">
+                                <small>Price</small>
+                                <span class="amount">{{product.price}} LE</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div><!-- contest-cart__right end -->
+                </div><!-- contest-cart end -->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- contest-details-section end  -->
+{% endblock %}
+
+{% block more_js %}
+{% if user.is_authenticated %}
+<script type="text/javascript">
+    var rouletteOptions = {
+        speed: 10,
+        duration: 3,
+        stopImageNumber: 0,
+        stopCallback: function ($stopElm) {
+            $('#test').prop('disabled', false);
+            $('#open').prop('disabled', false);;
+        }
+    }
+    var stopImageNumber = 0
+
+    startplaying = function () {
+        slug = window.location.pathname.split("/")[2]
+        $.ajax({
+            type: "GET",
+            url: "/playing/" + slug + "/",
+        }).done((data) => {
+            stopImageNumber = $("#"+data.pk).index(".roulette-img")
+        })
+    }
+
+    startRoulette = function () {
+        $('.contest-cart__right .roulette').roulette('option', rouletteOptions)
+        $('.contest-cart__right .roulette').roulette('start');
+        $('#test').prop('disabled', true);
+        $('#open').prop('disabled', true);
+    }
+
+    $('#test').click(function () {
+        randomNumber = Math.floor(Math.random() * $(".roulette-inner>img").length - 1)
+        rouletteOptions["stopImageNumber"] = randomNumber
+        startRoulette()
+    });
+
+    $('#open').click(function () {
+        startplaying()
+        rouletteOptions["stopImageNumber"] = stopImageNumber
+        startRoulette()
+    });
+</script>
+{% else %}
+<script type="text/javascript">
+    $('#test,#open').click(function () {
+        $('#loginModal').modal('show');
+    });
+</script>
+{% endif %}
+
+{% endblock %}
