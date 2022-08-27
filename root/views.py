@@ -24,7 +24,11 @@ class Home(View):
             "sign_up_form":sign_up_form,
             "login_form":login_form
         }
-        return render(request,"home_ar.html",context)
+        if request.LANGUAGE_CODE == "en":
+            page = "home_en.html"
+        elif request.LANGUAGE_CODE == "ar":
+            page = "home_ar.html"
+        return render(request, page,context)
 
 class Box_detail(View):
     def get(self,request,slug):
@@ -107,6 +111,8 @@ class Signup(View):
             form.save()
             user = authenticate(request, username=username, password=password)
             login(request, user)
+        else:
+            print(form.errors)
         return redirect(request.META['HTTP_REFERER'])
 
 class Signout(View):
@@ -120,8 +126,6 @@ class Validation(View):
         data = request.POST
         if "sign_up_username" in data:
             username = data["sign_up_username"]
-            if  str(username).isalpha() or str(username).isnumeric():
-                return JsonResponse({"errors": "لا يحتوي علي حروف وأرقام و رموز"}, status=400)
             if User.objects.filter(username=username).exists():
                 return JsonResponse({"errors": "للأسف هذا الاسم مستخدم ,استخدم اسما أخر"}, status=400)
             return JsonResponse({"valid": True})
@@ -133,19 +137,5 @@ class Validation(View):
             if User.objects.filter(email=email).exists():
                 return JsonResponse({"errors": "للأسف هذا الإيميل مستخدم ,استخدم إيميلا أخر"}, status=400)
             return JsonResponse({"valid": True})
-        if "login_username" in data and not "login_password" in data:
-            username = data["login_username"]
-            if not User.objects.filter(username=username).exists():
-                return JsonResponse({"errors": "اسم المستخدم غير صحيح"}, status=400)
-            return JsonResponse({"valid": True})
-        if "login_password" in data:
-            username = data["login_username"]
-            password = data["login_password"]
-            if not User.objects.filter(username=username).exists():
-                return JsonResponse({"errors": "اسم المستخدم غير صحيح"}, status=400)
-            else:
-                user = User.objects.get(username=username)
-                if not user.check_password(password):
-                    return JsonResponse({"errors": "كلمة المرور غير صحيحة"}, status=400)
-                return JsonResponse({"valid": True})
+
         return JsonResponse({"message":"post valid data to validate it"})

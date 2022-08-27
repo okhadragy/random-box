@@ -12,4 +12,4 @@ urlpatterns = [
     path("signup/",Signup.as_view(),name="signup"),
     path("signout/",Signout.as_view(),name="signout"),
     path("validate/",csrf_exempt(Validation.as_view()),name="validate"),
-]
+] 

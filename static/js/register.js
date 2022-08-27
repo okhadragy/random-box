@@ -1,9 +1,9 @@
-var usernameValue = "",
-    emailValue = "",
-    passwordValue = "",
-    confirmPasswordValue = "",
-    loginUsernameValue = "",
-    loginPasswordValue = "";
+/*
+1 - Functions
+2 - Main variables
+3 - Events ( listening to the input in each of the register form inputs)
+
+*/
 
 
 startListening = function (element, element2, e) {
@@ -35,6 +35,19 @@ validElement = function (element, element2, submitButton) {
     $(submitButton).removeAttr("disabled")
 }
 
+getCurrentLanguage = function () {
+    return window.location.pathname.split("/")[1]
+}
+
+var usernameValue = "",
+    emailValue = "",
+    passwordValue = "",
+    confirmPasswordValue = "",
+    loginUsernameValue = "",
+    loginPasswordValue = "";
+    Lang = getCurrentLanguage()
+
+
 $("#signup_username").keyup((e) => {
     usernameValue = startListening("#signup_username", ".invalid-signup-username", e)
     if (usernameValue.length > 0) {
@@ -43,7 +56,7 @@ $("#signup_username").keyup((e) => {
         }
         $.ajax({
             type: "POST",
-            url: "/validate/",
+            url: "/"+Lang+"/validate/",
             data: data,
             error: (res)=>{inValidElement("#signup_username", ".invalid-signup-username", res.responseJSON.errors, "#submitSignUp")},
             success: ()=>{
@@ -69,7 +82,7 @@ $("#signup_email").keyup((e) => {
         }
         $.ajax({
             type: "POST",
-            url: "/validate/",
+            url: "/"+Lang+"/validate/",
             data: data,
             error: (res)=>{inValidElement("#signup_email", ".invalid-signup-email", res.responseJSON.errors, "#submitSignUp")},
             success: ()=>{
@@ -106,58 +119,5 @@ $("#signup_password2").keyup((e) => {
         $("#submitSignUp").prop("disabled", "true")
     } else {
         $('#submitSignUp').removeAttr("disabled")
-    }
-})
-
-$("#login_username").keyup((e) => {
-    loginUsernameValue = startListening("#login_username", ".invalid-login-username", e)
-    if (loginUsernameValue.length > 0) {
-        data = {
-            login_username: loginUsernameValue
-        }
-        $.ajax({
-            type: "POST",
-            url: "/validate/",
-            data: data,
-            error: (res)=>{inValidElement("#login_username", ".invalid-login-username", res.responseJSON.errors, "#submitLogin")},
-            success: ()=>{
-                if ($(".invalid-login-password").is(":visible")) {
-                    $("#submitLogin").prop("disabled", "true")
-                } else {
-                    validElement("#login_username", ".invalid-login-username",'#submitLogin')
-                }
-            }
-        })
-    } else if ($(".invalid-login-password").is(":visible")) {
-        $("#submitLogin").prop("disabled", "true")
-    } else {
-        $('#submitLogin').removeAttr("disabled")
-    }
-})
-
-$("#login_password").keyup((e) => {
-    loginPasswordValue = startListening("#login_password", ".invalid-login-password", e)
-    if (loginPasswordValue.length > 0 && loginUsernameValue.length > 0) {
-        data = {
-            login_password: loginPasswordValue,
-            login_username: loginUsernameValue,
-        }
-        $.ajax({
-            type: "POST",
-            url: "/validate/",
-            data: data,
-            error: (res)=>{console.log("password wrong");inValidElement("#login_password", ".invalid-login-password", res.responseJSON.errors, "#submitLogin")},
-            success: ()=>{
-                if ($(".invalid-login-username").is(":visible")) {
-                    $("#submitLogin").prop("disabled", "true")
-                } else {
-                    validElement("#login_password", ".invalid-login-password",'#submitLogin')
-                }
-            }
-        })
-    } else if ($(".invalid-login-username").is(":visible")) {
-        $("#submitLogin").prop("disabled", "true")
-    } else {
-        $('#submitLogin').removeAttr("disabled")
     }
 })

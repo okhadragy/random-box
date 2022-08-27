@@ -9,18 +9,18 @@ from django.core.exceptions import ValidationError
 
 
 class Signup_Form(UserCreationForm):
-    username = forms.CharField(label="الإسم",widget=forms.TextInput(attrs={'placeholder': 'اسم المستخدم'}))
-    email = forms.EmailField(label="الإيميل",widget=forms.TextInput(attrs={'placeholder': 'الإيميل'}))
-    password1 = forms.CharField(label="كلمة المرور",widget=PasswordInput(attrs={'placeholder': 'كلمة المرور'}),min_length=8)
-    password2 = forms.CharField(label="تأكيد كلمة المرور",widget=PasswordInput(attrs={'placeholder': 'تأكيد كلمة المرور'}),min_length=8)
+    username = forms.CharField(label="الإسم",widget=forms.TextInput())
+    email = forms.EmailField(label="الإيميل",widget=forms.TextInput())
+    password1 = forms.CharField(label="كلمة المرور",widget=PasswordInput(),min_length=8)
+    password2 = forms.CharField(label="تأكيد كلمة المرور",widget=PasswordInput(),min_length=8)
     class Meta:
         model = User
         fields = ("username","email","password1","password2")
 
 
 class Login_Form(forms.ModelForm):
-    username = forms.CharField(label="الإسم",widget=forms.TextInput(attrs={'placeholder': 'اسم المستخدم'}))
-    password = forms.CharField(label="كلمة المرور",widget=PasswordInput(attrs={'placeholder': 'كلمة المرور'}))
+    username = forms.CharField(label="الإسم",widget=forms.TextInput())
+    password = forms.CharField(label="كلمة المرور",widget=PasswordInput())
     class Meta:
         model = User
         fields = ("username","password")

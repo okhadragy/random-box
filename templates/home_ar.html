@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <!-- meta tags and other links -->
 <!DOCTYPE html>
@@ -151,16 +152,8 @@
                     <label class="invalid-signup-password2" style="display:none;">
                     </label>
                   </div>
-                  <div class="d-flex flex-wrap mt-2">
-                    <div class="custom-checkbox">
-                      <input type="checkbox" name="id-2" id="id-2" checked>
-                      <label for="id-2">أوافق علي </label>
-                      <span class="checkbox"></span>
-                    </div>
-                    <a href="#0" class="link ml-1">سياسات الخصوصية</a>
-                  </div>
                   <div class="form-group text-center mt-5">
-                    <button class="cmn-btn" id="submitSignUp">إنشاء حساب</button>
+                    <button class="cmn-btn" id="submitSignUp" disabled>إنشاء حساب</button>
                   </div>
                 </form>
                 <p class="text-center mt-4"> هل لديك حساب؟ <a href="#0" data-dismiss="modal" data-toggle="modal"
@@ -183,8 +176,6 @@
       <div class="header__bottom">
         <div class="container">
           <nav class="navbar navbar-expand-xl p-0 align-items-center">
-            <a class="site-logo site-title" href="index.html"><img src="{% static 'images/logo.png' %}"
-                alt="site-logo"><span class="logo-icon"><i class="flaticon-fire"></i></span></a>
             <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse"
               data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
               aria-label="Toggle navigation">
@@ -192,10 +183,39 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav main-menu ml-auto">
-                <li>
-                  <a href="{% url 'root:home' %}">الصفحة الرئيسية</a>
+                <li style="display:flex;flex-flow: row-reverse;" class="space-up">
+                  <a href="{% url 'root:home' %}" class="cmn-btn style--three btn--sm">الصفحة الرئيسية</a>
+                  <div class="language">
+                    <form action="{% url 'set_language' %}" method="post" id="langForm">{% csrf_token %}
+                      <input name="next" type="hidden" value="{{ redirect_to }}">
+                      <select class="js-lang" style="display: none;" name="language" id="langChanger" onchange="changeLanguage(this)">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                          <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                            {{ language.code }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                      <div class="nice-select js-lang" tabindex="0"><span class="current">AR</span>
+                        <ul class="list">
+                          {% get_current_language as LANGUAGE_CODE %}
+                          {% get_available_languages as LANGUAGES %}
+                          {% get_language_info_list for LANGUAGES as languages %}
+                          {% for language in languages %}
+                            <li data-value="{{ language.code }}" class="option {% if language.code == LANGUAGE_CODE %} selected{% endif %}" >
+                              {{ language.code }}
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    </form>
+                    <i class="las la-globe-europe"></i>
+                  </div>
                 </li>
               </ul>
+
               <div class="nav-right">
                 {% if user.is_authenticated %}
                 <a href="{% url 'root:signout' %}" class="cmn-btn style--three btn--sm">تسجيل الخروج</a>
@@ -234,12 +254,17 @@
             </div>
           </div>
           <div class="col-lg-6 col-md-8">
-            <div class="hero__content">
+            <div class="hero__content" style="text-align: right ;">
               <div class="hero__subtitle wow fadeInUp" data-wow-duration="0.5s" data-wow-delay="0.3s">فرصتك الأن للحصول
                 علي</div>
               <h2 class="hero__title wow fadeInUp" data-wow-duration="0.5s" data-wow-delay="0.5s">جوائز ضخمة</h2>
               <p class="wow fadeInUp" data-wow-duration="0.5s" data-wow-delay="0.7s">اغتنم فرصتك واحصل علي أفضل الجوائز
                 باقل سعر</p>
+              <div class="hero__btn wow fadeInUp" data-wow-duration="0.5s" data-wow-delay="0.9s">
+                <a class="video-btn" href="https://www.youtube.com/embed/d6xn5uflUjg"
+                  data-rel="lightcase:myCollection"><i class="fas fa-play"></i></a>
+                <a href="contest.html" class="cmn-btn">ساهم معنا</a>
+              </div>
             </div>
           </div>
         </div>
@@ -288,7 +313,6 @@
                 <div class="row mb-none-30 justify-content-center">
                   {% if boxes %}
                   {% for box in boxes %}
-                  {% if box.products.all %}
                   <div class="col-xl-4 col-md-6 mb-30">
                     <div class="contest-card">
                       <a href="{{box.get_absolute_url}}" class="item-link"></a>
@@ -309,7 +333,6 @@
                       </div>
                     </div><!-- contest-card end -->
                   </div>
-                  {% endif %}
                   {% endfor %}
                   {% else %}
 
@@ -320,9 +343,7 @@
               {% for category in categories %}
               <div class="tab-pane fade" id="{{category.name}}" role="tabpanel" aria-labelledby="{{category.name}}-tab">
                 <div class="row mb-none-30 justify-content-center">
-                  {% for box in boxes %}
-                  {% if box.products.all %}
-                  {% if box.category == category %}
+                  {% for box in category.box_set.all %}
                   <div class="col-xl-4 col-md-6 mb-30">
                     <div class="contest-card">
                       <a href="{{box.get_absolute_url}}" class="item-link"></a>
@@ -343,8 +364,6 @@
                       </div>
                     </div><!-- contest-card end -->
                   </div>
-                  {% endif %}
-                  {% endif %}
                   {% endfor %}
                 </div>
               </div>
@@ -384,6 +403,8 @@
     <!-- footer section end -->
   </div>
   <!-- page-wrapper end -->
+  <!-- Django js translation catalog -->
+  <script src="{% url 'javascript-catalog' %}"></script>
   <!-- jQuery library -->
   <script src="{% static 'js/vendor/jquery-3.5.1.min.js' %}"></script>
   <!-- bootstrap js -->
@@ -413,7 +434,10 @@
   <script src="{% static 'js/contact.js' %}"></script>
   <!-- custom js -->
   <script src="{% static 'js/app.js' %}"></script>
+  <!-- validation -->
   <script src="{% static 'js/register.js' %}"></script>
+  <!-- main functions -->
+  <script src="{% static 'js/main.js' %}"></script>
   {% block more_js %}{% endblock %}
 </body>
 
