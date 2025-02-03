@@ -17,11 +17,13 @@
                         <div class="contest-cart__thumb-slider">
                             <img src="/media/{{box.image}}" style="display: block;">
                         </div>
-                        <h4 class="subtitle">Open now for a chance to win</h4>
-                        <h3 class="contest-name">{{box.name}} Box</h3>
-                        <div class="ticket-price">
-                            <small>Price</small>
-                            <span class="amount">{{box.price}}LE</span>
+                        <div class="box-details">
+                            <h4 class="subtitle">Open now for a chance to win</h4>
+                            <h3 class="contest-name" style="margin-bottom:0px;">{{box.name}} Box</h3>
+                            <div class="ticket-price">
+                                <small style="margin-right: 15px;margin-left: 0px;">Price</small>
+                                <span class="amount">{{box.price}}LE</span>
+                            </div>
                         </div>
                     </div><!-- contest-cart__left end -->
                     <div class="contest-cart__right">
@@ -99,7 +101,7 @@
             type: "GET",
             url: "/playing/" + slug + "/",
         }).done((data) => {
-            stopImageNumber = $("#"+data.pk).index(".roulette-img")
+            stopImageNumber = $("#" + data.pk).index(".roulette-img")
         })
     }
 

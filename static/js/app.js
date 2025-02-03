@@ -1,13 +1,63 @@
 (function ($) {
   "use strict";
+  
   var rouletteOptions = {
     speed: 10,
     duration: 3,
     stopImageNumber: 0,
-  }
+  };
+
+  var sliderSlickOptions = {
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    rtl: false,
+    arrows: false,
+    fade: true,
+    asNavFor: '.contest-cart__nav-slider'
+  };
+
+  var sliderSlickNavOptions = {
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    rtl: false,
+    asNavFor: '.contest-cart__thumb-slider.slick',
+    dots: false,
+    centerMode: true,
+    nextArrow: '<div class="next"><i class="las la-angle-right"></i></div>',
+    prevArrow: '<div class="prev"><i class="las la-angle-left"></i></div>',
+    centerPadding: '0px',
+    focusOnSelect: true,
+    responsive: [{
+        breakpoint: 1200,
+        settings: {
+          slidesToShow: 3
+        }
+      },
+      {
+        breakpoint: 576,
+        settings: {
+          slidesToShow: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1
+        }
+      }
+    ]
+  };
 
   $(window).on('load', function () {
-
+    var lang = document.documentElement.lang;
+    if (lang === "en") {
+      sliderSlickOptions.rtl = false
+      sliderSlickNavOptions.rtl = false
+    } else if (lang === "ar") {
+      sliderSlickOptions.rtl = true
+      sliderSlickNavOptions.rtl = true
+    }
+    
     //preloader
     $(".preloader").delay(300).animate({
       "opacity": "0"
@@ -96,47 +146,10 @@
         }
       ]
     });
-
-    $('.contest-cart__thumb-slider.slick').slick({
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      rtl: true,
-      arrows: false,
-      fade: true,
-      asNavFor: '.contest-cart__nav-slider'
-    });
-
-    $('.contest-cart__nav-slider').slick({
-      slidesToShow: 3,
-      slidesToScroll: 1,
-      rtl: true,
-      asNavFor: '.contest-cart__thumb-slider.slick',
-      dots: false,
-      centerMode: true,
-      nextArrow: '<div class="next"><i class="las la-angle-right"></i></div>',
-      prevArrow: '<div class="prev"><i class="las la-angle-left"></i></div>',
-      centerPadding: '0px',
-      focusOnSelect: true,
-      responsive: [{
-          breakpoint: 1200,
-          settings: {
-            slidesToShow: 3
-          }
-        },
-        {
-          breakpoint: 576,
-          settings: {
-            slidesToShow: 2
-          }
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            slidesToShow: 1
-          }
-        }
-      ]
-    });
+    
+    $('.contest-cart__thumb-slider.slick').slick(sliderSlickOptions);
+    
+    $('.contest-cart__nav-slider').slick(sliderSlickNavOptions);
 
     $('.contest-cart__right .roulette').roulette(rouletteOptions);
 

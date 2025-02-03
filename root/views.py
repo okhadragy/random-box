@@ -36,7 +36,20 @@ class Box_detail(View):
         classification = Classification.objects.first()
         sign_up_form = Signup_Form(auto_id="signup_%s")
         login_form = Login_Form(auto_id="login_%s")
-        return render(request,"box_detail_ar.html",{"box":box,"classification":classification,"sign_up_form":sign_up_form,"login_form":login_form})
+
+        context = {
+            "box":box,
+            "classification":classification,
+            "sign_up_form":sign_up_form,
+            "login_form":login_form
+        }
+
+        if request.LANGUAGE_CODE == "en":
+            page = "box_detail_en.html"
+        elif request.LANGUAGE_CODE == "ar":
+            page = "box_detail_ar.html"
+        
+        return render(request,page,context)
 
 class Checkout(View):
     def get(self,request,slug):
