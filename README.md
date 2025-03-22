@@ -2,13 +2,20 @@
 ## Overview
 A "Random Box" website built using Django is typically a web application that allows users to open virtual mystery boxes containing random items, rewards, or surprises. It can be used for giveaways, e-commerce, gaming, or entertainment.
 
+
 ## Features
 1- Sign up & Log in ability 
+
 2- Creating random boxes & adding Items to them 
+
 3- lucky wheel picker 
+
 4- Admin page 
+
 5- PayPal payment integration 
+
 6- Supporting the Arabic Language
+
 
 ## 🔹Steps to run the project using the terminal
 1️⃣ download Python
